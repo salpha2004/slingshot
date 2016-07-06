@@ -41,8 +41,8 @@ python ./setup.py sdist
 pip install dist/slingshot-0.2.tar.gz --force-reinstall
 
 # create new database user
-mysql -u root --password=$MYSQL_PASS -e "create user 'slingshot'@'%' identified by 'slingshot';"
-mysql -u root --password=$MYSQL_PASS -e "grant all privileges on *.* to 'slingshot'@'%';"
+mysql -u root --password=$MYSQL_PASS -e "create user 'slingshot'@'localhost' identified by 'slingshot';"
+mysql -u root --password=$MYSQL_PASS -e "grant all privileges on slingshot.* to 'slingshot'@'localhost';"
 
 # configure mysql to allow large packets (1G) and many connections
 sudo sed -i -r "s/^(#\s*)?(max_allowed_packet\s*=\s*).*$/\21G/g" /etc/mysql/my.cnf
