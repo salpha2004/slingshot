@@ -32,7 +32,8 @@ using namespace std;
   cout << #TC_NAME_ID << " Started..." << endl; \
   status = rtems_task_create( \
     tc_task_name, TC_TASK_PRIORITY, RTEMS_MINIMUM_STACK_SIZE, \
-    RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tc_task_id); \
+    RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES | RTEMS_FLOATING_POINT, \
+    &tc_task_id); \
 \
   std::cout << "TC task creation: " << \
     rtems_status_text (status) << std::endl; \
@@ -57,4 +58,5 @@ using namespace std;
 
 rtems_task Init (rtems_task_argument)
 {
-
+  goto CURRENT_TC;
+CURRENT_TC:

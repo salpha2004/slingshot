@@ -19,6 +19,7 @@ from util import get_path
 from testcase_factory import TcFactory
 from setting_factory import SettingFactory
 from ..db.db_connector import DbConnector
+from tc_executer import TestsuiteExecuter
 
 
 def parse_arguments():
@@ -45,11 +46,13 @@ def parse_arguments():
 def make(work_dir, jobs):
   # go to working directory to invoke "make".
   os.chdir (work_dir)
-  p1 = subprocess.Popen(["make", "-j", str(jobs)], stderr=subprocess.PIPE)
-  p2 = subprocess.Popen(["tee", os.path.join("makefile.log")],
-    stdin=p1.stderr)
-  p1.stderr.close()
-  p2.communicate()
+  make_log = open(os.path.join(work_dir, 'makefile.log'), 'a')
+  make_proc = subprocess.Popen(["make", "-j", str(jobs)],
+    stdout=make_log,
+    stderr=make_log)
+  make_proc.communicate()
+  make_log.close()
+  return make_proc.returncode;
 
 def main():
   """ Initialize, generate test cases, finally make them. """
@@ -61,16 +64,16 @@ def main():
   # parse options
   opts = parse_arguments()
   work_dir = os.path.join(os.getcwd(), opts.work_dir)
+
   db_connection = MySQLdb.connect(host=opts.db_host, user=opts.db_user,
               passwd=opts.db_passwd, db=opts.db_name)
   db_connection.autocommit(True)
-
-  # Create a fresh work directory
+ # Create a fresh work directory
   if os.path.exists(work_dir):
     shutil.rmtree(work_dir)
   logger.info("Create a fresh directory to work in.")
   os.makedirs(work_dir)
-  
+ 
   db = DbConnector(db_connection)
   tc_factory = TcFactory(work_dir)
   s_factory = SettingFactory(db)
@@ -86,5 +89,15 @@ def main():
     while tcg.testcases_left():
       tcg.generate()
   tcg.finalize_testcase_generation()
-  print "Test cases generation done. Now making test application...\n"
-  make(work_dir, jobs=opts.jobs)
+  print "Test cases generation done. Now making test application (tail -f makefile.log in the working directory (probably 'tmp') for the progress)...\n"
+  if make(work_dir, jobs=opts.jobs) != 0:
+    print "ERROR: make failed. Stopping slingshot..."
+    sys.exit(1)
+
+  print "Making the test program done. Now running it...\n"
+  tc_executer = TestsuiteExecuter(work_dir)
+  more_to_go = 1
+  while more_to_go != 0:
+    more_to_go = tc_executer.execute()
+    if more_to_go == 1:
+      make(work_dir, jobs=opts.jobs)
