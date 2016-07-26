@@ -15,9 +15,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--memory", "2048"]
   end
 
-#  config.vm.provision "shell", path: "setup-rtems.sh"
+  config.vm.provision "shell", path: "setup-rtems.sh"
   config.vm.provision "shell", path: "setup-slingshot.sh", privileged: false
-#  config.vm.provision :file, source: 'build-rtems.sh', destination: '/home/vagrant/build-rtems.sh'
+  config.vm.provision :file, source: 'build-rtems.sh', destination: '/home/vagrant/build-rtems.sh'
   config.vm.provision :file, source: 'run-slingshot.sh', destination: '/home/vagrant/run-slingshot.sh'
 
 end
