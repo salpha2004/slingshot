@@ -1,0 +1,13 @@
+################################################
+# based on OMK's appdl template (https://rtime.felk.cvut.cz/gitweb/rtems-devel.git/tree/HEAD:/rtems-omk-template/appdl)
+# modified by Saeed Ehteshamifar
+################################################
+
+bin_PROGRAMS = dlomk
+
+# note that 'dlomk' in 'dlomk_SOURCES' is the same as the value for 'bin_PROGRAMS'
+dlomk_SOURCES += init.c hello.c
+
+# note that 'dlomk' in these flags is the same as the value for 'bin_PROGRAMS'
+dlomk_EMBEDTARFILES = rootfs
+dlomk_EXPORTSYMBOLS = y

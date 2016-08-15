@@ -1,0 +1,6 @@
+1. Make sure you have make 3.81 or higher.
+2. Set 'RTEMS_MAKEFILE_PATH' in 'config.target' properly.
+3. Invoke 'make' in the top directory (the dir that contains this file).
+4. Copy 'hello.o' to 'src/rootfs'.
+5. Invoke 'make clean'.
+6. Invoke 'make' again. 

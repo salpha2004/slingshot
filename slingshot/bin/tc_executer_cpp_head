@@ -18,7 +18,7 @@
 /* note: default priority for Init task is 1 (the highest). */
 #define TC_TASK_PRIORITY 2
 #define TC_TIMEOUT_DIVISION_FACTOR 10
-/* in microseconds. should be dividable by TC_TIMEOUT_DIVISION_FACTOR. */
+/* in microseconds. should be divisible by TC_TIMEOUT_DIVISION_FACTOR. */
 #define TC_TIMEOUT 5000000
 
 using namespace std;
