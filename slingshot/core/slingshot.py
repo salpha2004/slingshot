@@ -93,7 +93,7 @@ def main():
   if make(work_dir, jobs=opts.jobs) != 0:
     print "ERROR: make failed. Stopping slingshot..."
     sys.exit(1)
-
+  print "_______________-----------------____________________\n"
   print "Making the test program done. Now running it...\n"
   tc_executer = TestsuiteExecuter(work_dir)
   more_to_go = 1
