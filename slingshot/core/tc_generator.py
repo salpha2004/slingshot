@@ -49,8 +49,7 @@ class TcGenerator(object):
 
 
     def _gen_testcase_executer(self, tc_batch):
-      # file path and name for final generated testcase_executer.cpp
-      cpp_file = os.path.join(self.work_dir, "testcase_executer.cpp")
+      # file path and name for the final generated testcase_executer.h
       h_file = os.path.join(self.work_dir, "testcase_executer.h")
 
       # generate testcase_executer.h.
@@ -58,20 +57,15 @@ class TcGenerator(object):
         for tc in tc_batch:
           f.write("#include \"{0}.h\"\n".format(tc.get_name()))
       
-      # generate testcase_executer.cpp.
-      with open(cpp_file, "a") as f:
-        for tc in tc_batch:
-          f.write("  RUN_TC({0})\n".format(tc.get_name()))
-
 
 
     def _gen_Makefile_testcase(self, tc_batch):
       # Makefile filename.
-      makefile_file = os.path.join(self.work_dir, "Makefile")
+      makefileomk_file = os.path.join(self.work_dir, "Makefile.omk")
       
-      with open(makefile_file, "a") as f:
+      with open(makefileomk_file, "a") as f:
         for tc in tc_batch:
-          f.write("CXXSRCS += {0}.cpp\n".format(tc.get_name()))
+          f.write("testsuite_SOURCES += {0}.c\n".format(tc.get_name()))
 
 
 
@@ -81,7 +75,7 @@ class TcGenerator(object):
       
       with open(makefile_file, "a") as f:
         for setting in self.all_settings:
-          f.write("CXXSRCS += {0}.cpp\n".format(setting.get_name()))
+          f.write("testsuite_SOURCES += {0}.c\n".format(setting.get_name()))
  
       
 
@@ -179,17 +173,6 @@ class TcGenerator(object):
 
 
 
-    def initialize_testcase_generation(self):
-      """ 
-      copy first lines of code from tc_executer_cpp_head to final
-      testcase_executer.cpp. then while generating each test case, we
-      will append a line to testcase_executer.cpp which calls the test case.
-      """
-      cpp_file = os.path.join(self.work_dir, "testcase_executer.cpp")
-      shutil.copy2(get_path("bin/tc_executer_cpp_head"), cpp_file)   
-
-
-    
     def generate(self):
         """ Generate 'batch_size' testcases from the set of remaining
         testcases. """
@@ -227,16 +210,8 @@ class TcGenerator(object):
           f.write("\n")
           f.write("bool tc_finished = false;\n")
         
-        # finalize source file generation
-        cpp_file = os.path.join(self.work_dir, "testcase_executer.cpp")
-        with open(cpp_file, "a") as f:
-          f.write("  /* signal end of the test program. */\n")
-          f.write("  cout << \"finito!\" << endl;\n")
-          f.write("  exit (0);\n")
-          f.write("}\n")
-        
         # finalize Makefile generation
-        makefile_file = os.path.join(self.work_dir, "Makefile")
+        makefileomk_file = os.path.join(self.work_dir, "Makefile.omk")
         """
         since settings are common among test cases, Makefile_settings contains
         duplicated entries for settings CPP files. we have to apply "sort"
@@ -248,13 +223,13 @@ class TcGenerator(object):
         p2 = subprocess.Popen("uniq", stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
         output = p2.communicate()[0]
-        with open(makefile_file, "a") as target_f:
+        with open(makefileomk_file, "a") as target_f:
           # add entries for settings CPP files:
           target_f.write(output)
-          # add entry for testcase_executer.cpp:
-          target_f.write("CXXSRCS += testcase_executer.cpp\n")
-          # concat Makefile_tail to the Makefile.
-          with open(get_path('bin/Makefile_tail')) as tail_f:
+          # add entry for testcase_executer.c:
+          target_f.write("testsuite_SOURCES += testcase_executer.c\n")
+          # concat Makefile.omk_tail to the Makefile.omk.
+          with open(get_path('bin/Makefile.omk_tail')) as tail_f:
             target_f.write(tail_f.read())
         # remove Makefile_settings as it is temporary.
         os.remove(makefile_settings_file)
@@ -262,3 +237,6 @@ class TcGenerator(object):
         """ copy values.h (which reside on /usr/include on Linux systems) to
         work_dir since it is included by test cases. """
         shutil.copy2(get_path("bin/values.h"), os.path.join(self.work_dir))
+        shutil.copy2(get_path("bin/testcase_executer.c"), os.path.join(self.work_dir))
+        shutil.copy2(get_path("bin/Makefile"), os.path.join(self.work_dir))
+        shutil.copy2(get_path("bin/Makefile.rules"), os.path.join(self.work_dir))

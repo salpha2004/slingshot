@@ -1,0 +1,9 @@
+
+# 'testsuite' is an arbitrary name for the the final executable
+bin_PROGRAMS = testsuite
+
+# merge object files in 'rootfs' dir in the final executable
+testsuite_EMBEDTARFILES = rootfs
+
+# export merged object files' symbols in the final executable's symbol table
+testsuite_EXPORTSYMBOLS = y

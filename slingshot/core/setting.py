@@ -53,25 +53,23 @@ class Setting(object):
         """ Create cpp and header files for this setting """
 
         if not self._is_created:
-            self.__gen_cpp()
+            self.__gen_c()
             self.__gen_header()
             self._is_created = True
         else:
             pass
 
-    def __gen_cpp(self):
-        """ Create cpp file for this setting """
+    def __gen_c(self):
+        """ Create C file for this setting """
 
-        cpp_file_name = os.path.join(self.__work_dir,
-                "{0}.cpp".format(self.__name))
+        c_file_name = os.path.join(self.__work_dir,
+                "{0}.c".format(self.__name))
 
-        with open(cpp_file_name, 'w') as f:
+        with open(c_file_name, 'w') as f:
             # Add datatype include files
             f.write(self.__datatype['include'])
             f.write('\n#include <stdio.h>\n')
             f.write('#include <stdlib.h>\n')
-            f.write('#include <fstream>\n')
-            f.write('#include <iostream>\n')
             f.write('#include <string.h>\n')
             f.write('#include <sys/types.h>\n')
             f.write('#include <sys/stat.h>\n')
@@ -87,11 +85,9 @@ class Setting(object):
             # of this setting (Since a function call can include more than
             # one setting, and the return variable of all settings is
             # _theVariable a namespace is necessary)
-            f.write("\nnamespace {\n")
-            f.write('\t{} _theVariable;\n'.format(self.__datatype['type']))
+            f.write('\n{} _theVariable;\n'.format(self.__datatype['type']))
             # Add defines
             f.write(self.__datatype['define'])
-            f.write("\n}\n")
 
             # Define setting function. All manipulations are done here
             # Add function signature for this setting

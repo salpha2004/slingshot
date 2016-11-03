@@ -64,6 +64,7 @@ def main():
   # parse options
   opts = parse_arguments()
   work_dir = os.path.join(os.getcwd(), opts.work_dir)
+  rootfs_dir = os.path.join(work_dir, 'rootfs')
 
   db_connection = MySQLdb.connect(host=opts.db_host, user=opts.db_user,
               passwd=opts.db_passwd, db=opts.db_name)
@@ -72,7 +73,8 @@ def main():
   if os.path.exists(work_dir):
     shutil.rmtree(work_dir)
   logger.info("Create a fresh directory to work in.")
-  os.makedirs(work_dir)
+  # 'makedirs' will create a multi-depth lib (both work_dir and rootfs_dir)
+  os.makedirs(rootfs_dir)
  
   db = DbConnector(db_connection)
   tc_factory = TcFactory(work_dir)
@@ -80,7 +82,6 @@ def main():
   tcg = TcGenerator(db, tc_factory, s_factory, work_dir,
     batch_size=opts.jobs)
 
-  tcg.initialize_testcase_generation()
   function_records = namedtuple('Function', ['id', 'name', 'tcl', 'header',
       'number_of_parameters', 'c_types', 'signature', 'return_type'])
   functions = db.get_functions(function_records)
@@ -95,9 +96,9 @@ def main():
     sys.exit(1)
   print "_______________-----------------____________________\n"
   print "Making the test program done. Now running it...\n"
-  tc_executer = TestsuiteExecuter(work_dir)
-  more_to_go = 1
-  while more_to_go != 0:
-    more_to_go = tc_executer.execute()
-    if more_to_go == 1:
-      make(work_dir, jobs=opts.jobs)
+#  tc_executer = TestsuiteExecuter(work_dir)
+#  more_to_go = 1
+#  while more_to_go != 0:
+#    more_to_go = tc_executer.execute()
+#    if more_to_go == 1:
+#      make(work_dir, jobs=opts.jobs)

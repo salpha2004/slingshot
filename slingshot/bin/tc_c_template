@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fstream>
-#include <iostream>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,12 +8,13 @@
 
 #include <FUNC_HEADER>
 #include <signal.h>
-#include <iostream>
 
 #include "HEADER_NAME.h"
 
-rtems_task ___TEST_CASE_NAME_ID (rtems_task_argument argument)
+int ___TEST_CASE_NAME_ID ()
 {
+  errno = 0;
+
   /* rval (return value) is used to detect Silent and Hindering failure
    * modes. not used in this stage, so has been commented out. */
 #if 0
@@ -43,6 +42,5 @@ rtems_task ___TEST_CASE_NAME_ID (rtems_task_argument argument)
    * this flag is used as a replacement to Linux process monitoring api.
    */
   tc_finished = true;
-  /* free resources taken by this task. */
-  rtems_task_delete (RTEMS_SELF);
+  return errno;
 }

@@ -36,7 +36,7 @@ class Testcase(object):
         """ Create cpp and header files for this testcase """
 
         self.__gen_header()
-        self.__gen_cpp()
+        self.__gen_c()
 
     def __gen_header(self):
         """ Create header file for this testcase """
@@ -74,19 +74,19 @@ class Testcase(object):
             for s in setting_declarations:
                 f.write(s)
             
-            f.write("\nrtems_task {0} (rtems_task_argument argument);\n"
+            f.write("\nint {0} ();\n"
               .format(self.get_name()))
             f.write("\nextern bool tc_finished;\n")
 
             f.closed
 
-    def __gen_cpp(self):
-        """ Create cpp file for this testcase """
+    def __gen_c(self):
+        """ Create C file for this testcase """
 
-        # Template for testcase cpp files
-        template = get_path("bin/tc_cpp_template")
+        # Template for testcase c files
+        template = get_path("bin/tc_c_template")
         # file name
-        fn = os.path.join(self.__work_dir, "{0}.cpp".format(self.__name))
+        fn = os.path.join(self.__work_dir, "{0}.c".format(self.__name))
 
         # Construct setting values
         s_call = ""
