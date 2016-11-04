@@ -6,7 +6,7 @@ import string
 
 class TestsuiteExecuter(object):
 
- 	def __init__(self, work_dir):
+	def __init__(self, work_dir):
 		self.work_dir = work_dir
 
 	def _goto_testcase_after(self, crashed_tc_name):

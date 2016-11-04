@@ -192,7 +192,7 @@ class TcGenerator(object):
           tc.generate_files()
           testcases.append(tc)
 
-        # for each test case, a call entry should be appended to tc_executer
+        # for each test case, an entry should be appended to testcase_executer.h
         self._gen_testcase_executer(testcases)
         # for each test case, an entry should be appended to Makefile
         self._gen_Makefile_testcase(testcases)
@@ -200,6 +200,9 @@ class TcGenerator(object):
         appended to Makefile. duplicated entries would be removed
         in the end. """
         self._gen_Makefile_settings()
+
+        # it'd be used by OMK to link test cases along with their settings in a single obj
+        return testcases;
 
 
 

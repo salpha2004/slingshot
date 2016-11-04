@@ -20,6 +20,7 @@ from testcase_factory import TcFactory
 from setting_factory import SettingFactory
 from ..db.db_connector import DbConnector
 from tc_executer import TestsuiteExecuter
+from omk_build_sys import OMK
 
 
 def parse_arguments():
@@ -42,17 +43,6 @@ def parse_arguments():
             'case generation process (default: output of \'nproc\')')
   (opts, _) = parser.parse_args()
   return opts
-
-def make(work_dir, jobs):
-  # go to working directory to invoke "make".
-  os.chdir (work_dir)
-  make_log = open(os.path.join(work_dir, 'makefile.log'), 'a')
-  make_proc = subprocess.Popen(["make", "-j", str(jobs)],
-    stdout=make_log,
-    stderr=make_log)
-  make_proc.communicate()
-  make_log.close()
-  return make_proc.returncode;
 
 def main():
   """ Initialize, generate test cases, finally make them. """
@@ -85,17 +75,22 @@ def main():
   function_records = namedtuple('Function', ['id', 'name', 'tcl', 'header',
       'number_of_parameters', 'c_types', 'signature', 'return_type'])
   functions = db.get_functions(function_records)
+  all_testcases = []
   for function in functions: # 'function' is a namedtuple representing a function.
     tcg.load_function(function)
     while tcg.testcases_left():
-      tcg.generate()
+      all_testcases += tcg.generate()
   tcg.finalize_testcase_generation()
   print "Test cases generation done. Now making test application (tail -f makefile.log in the working directory (probably 'tmp') for the progress)...\n"
-  if make(work_dir, jobs=opts.jobs) != 0:
+  omk = OMK(work_dir)
+  if omk.make_all(all_testcases, opts.jobs) != 0:
     print "ERROR: make failed. Stopping slingshot..."
     sys.exit(1)
   print "_______________-----------------____________________\n"
   print "Making the test program done. Now running it...\n"
+  # pass TC names one by one
+  # get the execution result back and store in db
+  # pass "fin" to finish the execution
 #  tc_executer = TestsuiteExecuter(work_dir)
 #  more_to_go = 1
 #  while more_to_go != 0:
