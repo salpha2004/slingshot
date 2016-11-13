@@ -21,6 +21,7 @@ from setting_factory import SettingFactory
 from ..db.db_connector import DbConnector
 from tc_executer import TestsuiteExecuter
 from omk_build_sys import OMK
+from i386_emul import I386Emul
 
 
 def parse_arguments():
@@ -86,11 +87,9 @@ def main():
   if omk.make_all(all_testcases, opts.jobs) != 0:
     print "ERROR: make failed. Stopping slingshot..."
     sys.exit(1)
-  print "_______________-----------------____________________\n"
-  print "Making the test program done. Now running it...\n"
-  # pass TC names one by one
-  # get the execution result back and store in db
-  # pass "fin" to finish the execution
+  print "\nMaking the test program done. Now running it...\n"
+  i386 = I386Emul(work_dir)
+  i386.execute_tests(all_testcases)
 #  tc_executer = TestsuiteExecuter(work_dir)
 #  more_to_go = 1
 #  while more_to_go != 0:

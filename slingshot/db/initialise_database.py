@@ -753,7 +753,9 @@ def main():
 
     logger.info("Initialise database")
 
+
     opts = parse_arguments()
+
     opts.data_type_path = get_path(opts.data_type_path)
     opts.type_mapping = get_path(opts.type_mapping)
     opts.call_table = get_path(opts.call_table)
