@@ -40,26 +40,33 @@ rtems_task runner (rtems_task_argument tc_name_arg)
   char* tc_name = (char*)tc_name_arg;
 
   status = rtems_tarfs_load("/", (uint8_t*)(&TARFILE_START), (long)&TARFILE_SIZE);
+  #ifdef DEBUG
   printf ("tar decompress status: %d\n", status);
+  #endif
 
   strcpy (tc_obj_name, tc_name);
   strcat (tc_obj_name, ".o");
   tc_handle = dlopen (tc_obj_name, RTLD_NOW | RTLD_GLOBAL);
   if (!tc_handle)
   {
+    #ifdef DEBUG
     printf ("dlopen failed: %s -- %s\n", dlerror(), tc_obj_name);
+    #endif
     exit(1);
   }
 
   tc_call = (tc_func_t)dlsym (tc_handle, tc_name);
   if (tc_call == NULL)
   {
+    #ifdef DEBUG
     printf ("dlsym failed: symbol not found: %s\n", tc_name);
+    #endif
     exit(1);
   }
 
   tc_call_ret = tc_call();
-  printf ("__errno: %d\n", tc_call_ret);
+  printf ("%s errno: %d\n", tc_name, tc_call_ret);
+  fflush (stdout);
 
   dlclose (tc_handle);
   rtems_task_delete (RTEMS_SELF);
@@ -70,34 +77,47 @@ rtems_task Init (rtems_task_argument ignored)
   rtems_id runner_task_id;
   rtems_name runner_task_name = rtems_build_name( 'T', 'C', 'R', ' ');
   rtems_status_code status;
-  char tc_name [30] = "TC_abs_";
-  /* ********************************* TODO: get test case name and set tc_name accordingly ********************************* */
-  /* ********************************* TODO: run test cases in a loop till the fin cmd ********************************* */
-  status = rtems_task_create(runner_task_name, TC_TASK_PRIORITY,
-                      RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES,
-                      RTEMS_DEFAULT_ATTRIBUTES | RTEMS_FLOATING_POINT,
-                      &runner_task_id);
-  printf ("Test case runner creation: %s\n",
-          rtems_status_text (status));
-  
-  status = rtems_task_start (runner_task_id, runner, (rtems_task_argument)tc_name);
-  printf ("Test case runner start: %s\n",
-          rtems_status_text (status));
+  char tc_name [30] = "";
+  /* as long as 'FIN' command is not received from Slingshot... */
+  while (strcmp (tc_name, "FIN") != 0) {
+    printf ("next testcase?\n");
+    fflush (stdout);
+    scanf ("%s", tc_name);
+    status = rtems_task_create(runner_task_name, TC_TASK_PRIORITY,
+            RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES,
+            RTEMS_DEFAULT_ATTRIBUTES | RTEMS_FLOATING_POINT,
+            &runner_task_id);
+    #ifdef DEBUG
+    printf ("Test case runner creation: %s\n",
+            rtems_status_text (status));
+    #endif
 
-  for (int i=0; i<TC_TIMEOUT_DIVISION_FACTOR; i++)
-  {
-    status = rtems_task_wake_after(
-      RTEMS_MICROSECONDS_TO_TICKS (TC_TIMEOUT/TC_TIMEOUT_DIVISION_FACTOR));
-    if (tc_finished)
-      break;
+    status = rtems_task_start (runner_task_id, runner,
+            (rtems_task_argument)tc_name);
+    #ifdef DEBUG
+    printf ("Test case runner start: %s\n",
+            rtems_status_text (status));
+    #endif
+
+    for (int i=0; i<TC_TIMEOUT_DIVISION_FACTOR; i++)
+    {
+      status = rtems_task_wake_after(
+        RTEMS_MICROSECONDS_TO_TICKS (TC_TIMEOUT/TC_TIMEOUT_DIVISION_FACTOR));
+      if (tc_finished)
+        break;
+    }
+    if (tc_finished) {
+      printf ("%s result: PASS\n", tc_name);
+      fflush (stdout);
+    }
+    else {
+      printf ("%s result: RESTART\n", tc_name);
+      fflush (stdout);
+    }
+    printf ("\n");
   }
-  if (tc_finished)
-    printf ("%s: PASS\n", tc_name);
-  else
-    printf ("%s: RESTART\n", tc_name);
-  printf ("\n");
-
   /* signal end of the test program. */
   printf ("finito!\n");
+  fflush (stdout);
   exit (0);
 }

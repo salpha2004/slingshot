@@ -7,6 +7,8 @@ class OMK(object):
 		self.work_dir = work_dir
 
 	def _make(self, cmd, jobs):
+		# store current dir to go back at the end.
+		original_work_dir = os.getcwd()
 		# go to working directory to invoke "make".
 		os.chdir (self.work_dir)
 		make_log = open(os.path.join(self.work_dir, 'makefile.log'), 'a')
@@ -21,6 +23,8 @@ class OMK(object):
 				stderr=make_log)
 			make_proc.communicate()			
 		make_log.close()
+		# go back to the previous work dir.
+		os.chdir(original_work_dir)
 		return make_proc.returncode;
 
 	def _get_obj_path(self, obj_name):
