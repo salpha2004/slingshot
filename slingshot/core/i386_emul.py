@@ -49,7 +49,11 @@ class I386Emul(object):
 			line = self.qemu.stdout.readline()
 			# if qemu was terminated it means the execution timed out...
 			if self.qemu.poll() is not None:
+<<<<<<< HEAD
 				line = testcase.get_name() + " result: CATASTROPHIC/ABORT\n"
+=======
+				line = testcase.get_name() + " result: CATASTROPHIC\n"
+>>>>>>> 1653216d8cad6675132c597a682179af28cb601d
 				t.cancel()
 				break
 			t.cancel()

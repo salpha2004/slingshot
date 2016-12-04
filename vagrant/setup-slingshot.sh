@@ -16,7 +16,7 @@ sudo apt-get install -y mysql-server
 sudo apt-get install -y openssh-server build-essential git-core \
 	python-mysqldb libmysqlclient15-dev python-dev libxml2-dev \
 	libxslt1-dev curl libbz2-dev libsqlite3-dev libgdbm-dev \
-	libssl-dev libexpat1-dev libncurses5-dev
+	libssl-dev libexpat1-dev libncurses5-dev qemu-system
 
 # install pyenv's prerequisites (those not in common with slingshot only)
 sudo apt-get install -y zlib1g-dev libreadline-dev wget llvm libncursesw5-dev

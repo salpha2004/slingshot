@@ -5,10 +5,11 @@ TEST_CASE_LIST="sample.tcl"
 cd slingshot
 
 while true; do
-	read -p "WARNING: Previous results of running slingshot (if any) will be deleted. Continue? " yesNo
+	read -p "WARNING: Previous results of running slingshot (if any) will be deleted. Continue? (y/n) " yesNo
 	case $yesNo in
 		[Yy]* ) ./reinit-db.sh
 				read -p "Test case list filename? [default: sample.tcl]" filename
+				echo "Please wait while initializing the database for the test case. This takes quite a while..."
 				if [ -z "$filename"]; then
 					init_db -t $TEST_CASE_LIST
 				else

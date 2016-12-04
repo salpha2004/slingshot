@@ -111,7 +111,11 @@ rtems_task Init (rtems_task_argument ignored)
       fflush (stdout);
     }
     else {
+<<<<<<< HEAD
       printf ("%s result: RESTART\n", tc_name);
+=======
+      printf ("%s result: ABORT/RESTART\n", tc_name);
+>>>>>>> 1653216d8cad6675132c597a682179af28cb601d
       fflush (stdout);
     }
     printf ("\n");
