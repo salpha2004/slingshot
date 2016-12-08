@@ -25,5 +25,6 @@ cd ..; mkdir rtems-build; cd rtems-build
 make all
 make install
 
+echo "export PATH=${PREFIX}/bin:$PATH" >> ~/.bashrc
 echo "export RTEMS_MAKEFILE_PATH=${PREFIX}/b-${RTEMS_TARGET}/${RTEMS_TARGET}-rtems${RTEMS_VERSION}/${RTEMS_BSP}" >> ~/.bashrc
 source ~/.bashrc
