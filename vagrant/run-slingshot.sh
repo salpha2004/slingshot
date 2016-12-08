@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z "$RTEMS_MAKEFILE_PATH" ]; then
+	echo "Please first run the script build-rtems.sh. Exitting..."
+	exit 1
+fi
+
 TEST_CASE_LIST="sample.tcl"
 
 cd slingshot
