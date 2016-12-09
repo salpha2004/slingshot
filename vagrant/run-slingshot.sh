@@ -10,7 +10,7 @@ TEST_CASE_LIST="sample.tcl"
 cd slingshot
 
 while true; do
-	read -p "WARNING: Previous results of running slingshot (if any) will be deleted. Continue? (y/n) " yesNo
+	read -p "WARNING: Previous results of running Slingshot (if any) will be deleted from the database. Continue? (y/n) " yesNo
 	case $yesNo in
 		[Yy]* ) ./reinit-db.sh
 				read -p "Test case list filename? [default: sample.tcl]" filename

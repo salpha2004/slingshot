@@ -19,7 +19,7 @@
 
 /* note: the default priority for Init task is 1 (the highest). */
 #define TC_TASK_PRIORITY 2
-#define TC_TIMEOUT_DIVISION_FACTOR 10
+#define TC_TIMEOUT_DIVISION_FACTOR 2 // previoud value = 10
 /* in microseconds. should be dividable by TC_TIMEOUT_DIVISION_FACTOR. */
 #define TC_TIMEOUT 5000000
 
@@ -111,11 +111,7 @@ rtems_task Init (rtems_task_argument ignored)
       fflush (stdout);
     }
     else {
-<<<<<<< HEAD
       printf ("%s result: RESTART\n", tc_name);
-=======
-      printf ("%s result: ABORT/RESTART\n", tc_name);
->>>>>>> 1653216d8cad6675132c597a682179af28cb601d
       fflush (stdout);
     }
     printf ("\n");

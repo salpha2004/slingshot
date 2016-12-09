@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 
 class OMK(object):
@@ -14,14 +15,17 @@ class OMK(object):
 		make_log = open(os.path.join(self.work_dir, 'makefile.log'), 'a')
 		if cmd == 'all':
 			make_proc = subprocess.Popen(["make", "-j", str(jobs)],
-				stdout=make_log,
-				stderr=make_log)
-			make_proc.communicate()
+				stdout=subprocess.PIPE,
+				stderr=subprocess.STDOUT)
+			out = make_proc.communicate()[0]
+			for line in out:
+				sys.stdout.write(line)
+				make_log.write(line)
 		if cmd == 'clean':
 			make_proc = subprocess.Popen(["make", "clean", "-j", str(jobs)],
-				stdout=make_log,
-				stderr=make_log)
-			make_proc.communicate()			
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE)
+			make_proc.communicate()
 		make_log.close()
 		# go back to the previous work dir.
 		os.chdir(original_work_dir)
@@ -55,13 +59,26 @@ class OMK(object):
 		return 0
 
 	def make_all(self, tc_list, jobs):
+		'''
+		the OMK procedure to put the test cases' object files in
+		the final executable for dynamic linking, is as following:
+		1. 'make all' source codes (test cases + test executor).
+		2. [only for Slingshot]: combine the test case obj file with
+		the corresponding setting file.
+		3. put the obj files in 'rootfs' dir.
+		4. 'make clean'
+		5. 'make all' again. then objs in 'rootfs' will be put in the final exec.
+		'''
+		print "\n\nFirst make..."
 		if self._make(cmd='all', jobs=jobs) != 0:
 			return -1 # error
+		print "\n\nLinking test case obj and setting obj..."
 		if self._link_tc_and_setting_objs(tc_list) != 0:
 			return -1
 		# make clean and...
 		self._make(cmd='clean', jobs=jobs)
 		# ...make again to put the newly created objects (under 'rootfs') in the final binary
+		print "\n\nFinal make..."
 		if self._make(cmd='all', jobs=jobs) != 0:
 			return -1 # error
 		return 0 # success

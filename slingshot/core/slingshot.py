@@ -19,7 +19,6 @@ from util import get_path
 from testcase_factory import TcFactory
 from setting_factory import SettingFactory
 from ..db.db_connector import DbConnector
-from tc_executer import TestsuiteExecuter
 from omk_build_sys import OMK
 from i386_emul import I386Emul
 
@@ -63,7 +62,7 @@ def main():
  # Create a fresh work directory
   if os.path.exists(work_dir):
     shutil.rmtree(work_dir)
-  logger.info("Create a fresh directory to work in.")
+  logger.info("Created a fresh directory to work in.")
   # 'makedirs' will create a multi-depth lib (both work_dir and rootfs_dir)
   os.makedirs(rootfs_dir)
  
@@ -81,18 +80,13 @@ def main():
     tcg.load_function(function)
     while tcg.testcases_left():
       all_testcases += tcg.generate()
+    print "Generated test cases for function: {0}".format(function.name)
   tcg.finalize_testcase_generation()
-  print "Test cases generation done. Now making test application (tail -f makefile.log in the working directory (probably 'tmp') for the progress)...\n"
+  print "Compiling the test cases (tail -f makefile.log in the working directory (probably 'tmp') for the progress)...\n"
   omk = OMK(work_dir)
   if omk.make_all(all_testcases, opts.jobs) != 0:
-    print "ERROR: make failed. Stopping slingshot..."
+    print "ERROR: 'make' failed. Stopping slingshot..."
     sys.exit(1)
-  print "\nMaking the test program done. Now running it...\n"
+  print "\nRunning the test suite...\n"
   i386 = I386Emul(work_dir)
   i386.execute_tests(all_testcases)
-#  tc_executer = TestsuiteExecuter(work_dir)
-#  more_to_go = 1
-#  while more_to_go != 0:
-#    more_to_go = tc_executer.execute()
-#    if more_to_go == 1:
-#      make(work_dir, jobs=opts.jobs)

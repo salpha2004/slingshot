@@ -26,6 +26,8 @@ bash-vagrant-box$ bash ./run-slingshot.sh
 
 Test suites would be generated in the `tmp` directory (default value), located under `slingshot` directory.
 
+Each time you can re-run the test process by running `run-slingshot.sh` script.
+
 - The instructions were tested on OS X 10.11.6 (El Capitan) using VirtualBox 5.0.24 and Vagrant 1.8.7 (NOTE: using VirtualBox 5.1.8 was troublesome)
 
 [TUD DEED's Slingshot]: https://github.com/DEEDS-TUD/Slingshot

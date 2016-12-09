@@ -457,6 +457,7 @@ def add_datatypes_and_settings_to_db(data_type_path, db_connection,
     for dt_xml_file in file_names:
         file_name = os.path.basename(dt_xml_file)
         logger.info("Add datatype and settings for file {}".format(file_name))
+        print "Add datatype and settings for file: {}...".format(file_name)
         process_datatype(dt_xml_file, db_connection, dt_includes, cache)
     out_q.put(cache)
 
@@ -729,6 +730,8 @@ def create_and_fill_signature_table(function_signature, testcases, db, cache):
             testcase_records, db)
     logger.info("Added {} testcases to table {}".format(len(testcase_records),
         function_signature))
+    print "Added {} testcases to table: {}".format(len(testcase_records),
+        function_signature)
 
 
 def add_error_model(failure_categories, db):

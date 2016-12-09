@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 
 class I386Emul(object):
 	qemu = None
+	timeout_value = 5 # in seconds
 
 	def __init__(self, work_dir):
 		self.work_dir = work_dir
@@ -43,16 +44,12 @@ class I386Emul(object):
 		self.qemu.stdin.write(testcase.get_name() + '\n')
 		line = self.qemu.stdout.readline()
 		while "result" not in line:
-			t = Timer(5, self._testcase_execution_time_out)
+			t = Timer(self.timeout_value, self._testcase_execution_time_out)
 			t.start()
 			line = self.qemu.stdout.readline()
 			# if qemu was terminated it means the execution timed out...
 			if self.qemu.poll() is not None:
-<<<<<<< HEAD
 				line = testcase.get_name() + " result: CATASTROPHIC/ABORT\n"
-=======
-				line = testcase.get_name() + " result: CATASTROPHIC\n"
->>>>>>> 1653216d8cad6675132c597a682179af28cb601d
 				t.cancel()
 				break
 			t.cancel()
@@ -60,6 +57,7 @@ class I386Emul(object):
 
 	def execute_tests(self, testcases):
 		while testcases:
+			print "Testing {0}...".format(testcases[0].get_name())
 			# if qemu is not running...
 			if self.qemu is None or self.qemu.poll() is not None:
 				self._run_qemu()
