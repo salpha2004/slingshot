@@ -27,8 +27,7 @@ class I386Emul(object):
 					testsuite_bin_path,
 					'-append',
 					'--console=/dev/com1',
-					'-serial',
-					'stdio'],
+					'-nographic'],
 					stdin = PIPE,
 					stdout = PIPE,
 					stderr = PIPE)
