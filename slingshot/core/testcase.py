@@ -36,7 +36,7 @@ class Testcase(object):
         """ Create cpp and header files for this testcase """
 
         self.__gen_header()
-        self.__gen_c()
+        self.__gen_cpp()
 
     def __gen_header(self):
         """ Create header file for this testcase """
@@ -74,19 +74,21 @@ class Testcase(object):
             for s in setting_declarations:
                 f.write(s)
             
-            f.write("\nint {0} ();\n"
+            # function should be exported as "C" in order to preserve the func name untouched
+            # (g++ prepends labels like _Z___GLOBAL__ to each symbol. exporting as "C" avoids that)
+            f.write("extern \"C\" int {0} ();\n"
               .format(self.get_name()))
-            f.write("\nextern bool tc_finished;\n")
+            f.write("extern bool tc_finished;\n")
 
             f.closed
 
-    def __gen_c(self):
-        """ Create C file for this testcase """
+    def __gen_cpp(self):
+        """ Create CPP file for this testcase """
 
         # Template for testcase c files
-        template = get_path("bin/tc_c_template")
+        template = get_path("bin/tc_cpp_template")
         # file name
-        fn = os.path.join(self.__work_dir, "{0}.c".format(self.__name))
+        fn = os.path.join(self.__work_dir, "{0}.cc".format(self.__name))
 
         # Construct setting values
         s_call = ""

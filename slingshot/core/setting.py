@@ -53,17 +53,17 @@ class Setting(object):
         """ Create cpp and header files for this setting """
 
         if not self._is_created:
-            self.__gen_c()
+            self.__gen_cpp()
             self.__gen_header()
             self._is_created = True
         else:
             pass
 
-    def __gen_c(self):
-        """ Create C file for this setting """
+    def __gen_cpp(self):
+        """ Create CPP file for this setting """
 
         c_file_name = os.path.join(self.__work_dir,
-                "{0}.c".format(self.__name))
+                "{0}.cc".format(self.__name))
 
         with open(c_file_name, 'w') as f:
             # Add datatype include files
@@ -85,9 +85,11 @@ class Setting(object):
             # of this setting (Since a function call can include more than
             # one setting, and the return variable of all settings is
             # _theVariable a namespace is necessary)
+            f.write("\nnamespace {\n")
             f.write('\n{} _theVariable;\n'.format(self.__datatype['type']))
             # Add defines
             f.write(self.__datatype['define'])
+            f.write("\n}\n")
 
             # Define setting function. All manipulations are done here
             # Add function signature for this setting

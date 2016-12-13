@@ -19,7 +19,7 @@
 
 /* note: the default priority for Init task is 1 (the highest). */
 #define TC_TASK_PRIORITY 2
-#define TC_TIMEOUT_DIVISION_FACTOR 2 // previoud value = 10
+#define TC_TIMEOUT_DIVISION_FACTOR 2 // previous value = 10
 /* in microseconds. should be dividable by TC_TIMEOUT_DIVISION_FACTOR. */
 #define TC_TIMEOUT 5000000
 
