@@ -11,9 +11,6 @@ import random
 import logging
 import logging.config
 import MySQLdb
-from loader import CtLoader
-from t_exceptions import FunctionNotInDB
-from t_exceptions import XMLNotValid
 from tc_generator import TcGenerator
 from util import get_path
 from testcase_factory import TcFactory
